@@ -7,7 +7,6 @@
  *
  * @author Adm
  */
-
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import javax.swing.JOptionPane;
@@ -15,49 +14,58 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-
 public class ProdutosDAO {
+
     
-    Connection conn;
-    PreparedStatement prep;
-    ResultSet resultset;
-    ArrayList<ProdutosDTO> listagem = new ArrayList<>();
-    
-    public void cadastrarProduto (ProdutosDTO produto){
-        
+
+    public void cadastrarProduto(ProdutosDTO produto) {
+
         try {
 
-            conectaDAO db = new  conectaDAO();
+            conectaDAO db = new conectaDAO();
             db.connectDB();
-            
-            
 
             String sql = "INSERT INTO produtos (nome, valor, status) VALUES (?, ?, ?)";
             PreparedStatement consulta = db.connectDB().prepareStatement(sql);
             consulta.setString(1, produto.getNome());
             consulta.setInt(2, produto.getValor());
             consulta.setString(3, produto.getStatus());
-           
-            
-            
 
             consulta.execute();
-            System.out.println("cadastrado com sucesso");
+            JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso");
 
-            
         } catch (SQLException e) {
             System.out.println("erro ao cadastrar");
         }
-        
-    }
-    
-    public ArrayList<ProdutosDTO> listarProdutos(){
-        
-        return listagem;
-    }
-    
-    
-    
-        
-}
 
+    }
+
+    public static ArrayList<ProdutosDTO> listar() {
+        ArrayList<ProdutosDTO> f = new ArrayList<ProdutosDTO>();
+        try {
+        conectaDAO db = new conectaDAO();
+        db.connectDB();
+
+        String sql = "SELECT * FROM produtos";
+        PreparedStatement consulta = db.connectDB().prepareStatement(sql);
+        ResultSet resposta = consulta.executeQuery();
+        
+        while (resposta.next()) {
+                ProdutosDTO cad = new ProdutosDTO();
+                cad.setId(resposta.getInt("id"));
+                cad.setNome(resposta.getString("nome"));
+                cad.setValor(resposta.getInt("valor"));
+                cad.setStatus(resposta.getString("status"));
+                
+                f.add(cad);
+                
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar");
+
+        }
+            return f;
+        }
+
+    }
