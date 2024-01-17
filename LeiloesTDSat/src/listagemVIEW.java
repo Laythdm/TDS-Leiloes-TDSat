@@ -18,7 +18,7 @@ public class listagemVIEW extends javax.swing.JFrame {
      */
     public listagemVIEW() {
         initComponents();
-        listarProdutos();
+        //listarProdutos();
     }
 
     /**
@@ -43,17 +43,17 @@ public class listagemVIEW extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        listaProdutos.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "ID", "Nome", "Valor", "Status"
+        DefaultTableModel model = listarProdutos(ProdutosDAO.listar());
+        listaProdutos.setModel(model);
+        listaProdutos.addAncestorListener(new javax.swing.event.AncestorListener() {
+            public void ancestorAdded(javax.swing.event.AncestorEvent evt) {
+                listaProdutosAncestorAdded(evt);
             }
-        ));
+            public void ancestorMoved(javax.swing.event.AncestorEvent evt) {
+            }
+            public void ancestorRemoved(javax.swing.event.AncestorEvent evt) {
+            }
+        });
         jScrollPane1.setViewportView(listaProdutos);
 
         jLabel1.setFont(new java.awt.Font("Lucida Fax", 0, 18)); // NOI18N
@@ -141,7 +141,7 @@ public class listagemVIEW extends javax.swing.JFrame {
         ProdutosDAO produtosdao = new ProdutosDAO();
         
         //produtosdao.venderProduto(Integer.parseInt(id));
-        listarProdutos();
+        //listarProdutos();
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
@@ -152,6 +152,10 @@ public class listagemVIEW extends javax.swing.JFrame {
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnVoltarActionPerformed
+
+    private void listaProdutosAncestorAdded(javax.swing.event.AncestorEvent evt) {//GEN-FIRST:event_listaProdutosAncestorAdded
+        // TODO add your handling code here:
+    }//GEN-LAST:event_listaProdutosAncestorAdded
 
     /**
      * @param args the command line arguments
@@ -201,25 +205,29 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private void listarProdutos(){
-        try {
-            ProdutosDAO produtosdao = new ProdutosDAO();
+    private DefaultTableModel listarProdutos(ArrayList<ProdutosDTO> lista){
+        
+        String[] colunas = {"id", "nome", "Valor", "Status"};
+        
+        DefaultTableModel model = new DefaultTableModel(colunas,0);
+        
+        for(int i = 0; i < lista.size(); i++){
+            ProdutosDTO f = lista.get(i);
+            String[] linha = {
+                Integer.toString(f.getId()),
+                f.getNome(),
+                 Integer.toString(f.getValor()),
+                f.getStatus(),
+                
+              
+            };
+            model.addRow(linha);
             
-            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
-            model.setNumRows(0);
-            
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
-                model.addRow(new Object[]{
-                    listagem.get(i).getId(),
-                    listagem.get(i).getNome(),
-                    listagem.get(i).getValor(),
-                    listagem.get(i).getStatus()
-                });
-            }
-        } catch (Exception e) {
         }
+        return model;
+      
+    }
+        
     
     }
-}
+
