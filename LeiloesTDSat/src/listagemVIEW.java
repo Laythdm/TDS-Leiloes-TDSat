@@ -1,12 +1,12 @@
 
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Adm
@@ -34,8 +34,6 @@ public class listagemVIEW extends javax.swing.JFrame {
         listaProdutos = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        id_produto_venda = new javax.swing.JTextPane();
         btnVender = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
         btnVendas = new javax.swing.JButton();
@@ -60,9 +58,7 @@ public class listagemVIEW extends javax.swing.JFrame {
         jLabel1.setText("Lista de Produtos");
 
         jLabel2.setFont(new java.awt.Font("Lucida Fax", 0, 14)); // NOI18N
-        jLabel2.setText("Vender Produto (ID)");
-
-        jScrollPane2.setViewportView(id_produto_venda);
+        jLabel2.setText("Vender Produto Selecionado");
 
         btnVender.setText("Vender");
         btnVender.addActionListener(new java.awt.event.ActionListener() {
@@ -93,10 +89,9 @@ public class listagemVIEW extends javax.swing.JFrame {
                 .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(131, 131, 131)
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(btnVender))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -119,10 +114,9 @@ public class listagemVIEW extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(42, 42, 42)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnVender))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnVender)
+                    .addComponent(jLabel2))
                 .addGap(29, 29, 29)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
@@ -136,17 +130,26 @@ public class listagemVIEW extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVenderActionPerformed
-        String id = id_produto_venda.getText();
-        
-        ProdutosDAO produtosdao = new ProdutosDAO();
-        
-        //produtosdao.venderProduto(Integer.parseInt(id));
-        //listarProdutos();
-    }//GEN-LAST:event_btnVenderActionPerformed
 
+        ProdutosDAO.venderProduto(Integer.parseInt(pegarArquivo()));
+        
+        
+        
+        DefaultTableModel model = listarProdutos(ProdutosDAO.listar());
+        listaProdutos.setModel(model);
+        jScrollPane1.setViewportView(listaProdutos);
+    }//GEN-LAST:event_btnVenderActionPerformed
+    private String pegarArquivo() {
+        int posicao = listaProdutos.getSelectedRow();
+
+        if (posicao == -1) {
+            JOptionPane.showMessageDialog(null, "Produto invalido");
+        }
+        return (String) listaProdutos.getValueAt(posicao, 0);
+    }
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-        //vendasVIEW vendas = new vendasVIEW(); 
-        //vendas.setVisible(true);
+        VendidosVIEW vendas = new VendidosVIEW();
+        vendas.setVisible(true);
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -196,38 +199,31 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JButton btnVendas;
     private javax.swing.JButton btnVender;
     private javax.swing.JButton btnVoltar;
-    private javax.swing.JTextPane id_produto_venda;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
-    private DefaultTableModel listarProdutos(ArrayList<ProdutosDTO> lista){
-        
+    private DefaultTableModel listarProdutos(ArrayList<ProdutosDTO> lista) {
+
         String[] colunas = {"id", "nome", "Valor", "Status"};
-        
-        DefaultTableModel model = new DefaultTableModel(colunas,0);
-        
-        for(int i = 0; i < lista.size(); i++){
+
+        DefaultTableModel model = new DefaultTableModel(colunas, 0);
+
+        for (int i = 0; i < lista.size(); i++) {
             ProdutosDTO f = lista.get(i);
             String[] linha = {
                 Integer.toString(f.getId()),
                 f.getNome(),
-                 Integer.toString(f.getValor()),
-                f.getStatus(),
-                
-              
-            };
+                Integer.toString(f.getValor()),
+                f.getStatus(),};
             model.addRow(linha);
-            
+
         }
         return model;
-      
-    }
-        
-    
+
     }
 
+}

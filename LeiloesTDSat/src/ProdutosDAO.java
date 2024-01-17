@@ -16,8 +16,6 @@ import java.util.ArrayList;
 
 public class ProdutosDAO {
 
-    
-
     public void cadastrarProduto(ProdutosDTO produto) {
 
         try {
@@ -43,29 +41,77 @@ public class ProdutosDAO {
     public static ArrayList<ProdutosDTO> listar() {
         ArrayList<ProdutosDTO> f = new ArrayList<ProdutosDTO>();
         try {
-        conectaDAO db = new conectaDAO();
-        db.connectDB();
+            conectaDAO db = new conectaDAO();
+            db.connectDB();
 
-        String sql = "SELECT * FROM produtos";
-        PreparedStatement consulta = db.connectDB().prepareStatement(sql);
-        ResultSet resposta = consulta.executeQuery();
-        
-        while (resposta.next()) {
+            String sql = "SELECT * FROM produtos";
+            PreparedStatement consulta = db.connectDB().prepareStatement(sql);
+            ResultSet resposta = consulta.executeQuery();
+
+            while (resposta.next()) {
                 ProdutosDTO cad = new ProdutosDTO();
                 cad.setId(resposta.getInt("id"));
                 cad.setNome(resposta.getString("nome"));
                 cad.setValor(resposta.getInt("valor"));
                 cad.setStatus(resposta.getString("status"));
-                
+
                 f.add(cad);
-                
+
             }
 
         } catch (SQLException e) {
             System.out.println("Erro ao listar");
 
         }
-            return f;
+        return f;
+    }
+
+    public static void venderProduto(int id) {
+        try {
+
+            conectaDAO db = new conectaDAO();
+            db.connectDB();
+
+            String slq = "UPDATE produtos SET status=? WHERE id=?;";
+            PreparedStatement consulta = db.connectDB().prepareStatement(slq);
+            consulta.setString(1, "Vendido");
+            consulta.setInt(2,id);
+
+            consulta.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Sucesso na venda");
+
+        } catch (SQLException e) {
+            System.out.println("erro ao atualizar status");
         }
 
     }
+
+    public static ArrayList<ProdutosDTO> listarPorvenda() {
+        ArrayList<ProdutosDTO> f = new ArrayList<ProdutosDTO>();
+        try {
+            conectaDAO db = new conectaDAO();
+            db.connectDB();
+
+            String sql = "SELECT * FROM produtos WHERE status='Vendido'";
+            PreparedStatement consulta = db.connectDB().prepareStatement(sql);
+            ResultSet resposta = consulta.executeQuery();
+
+            while (resposta.next()) {
+                ProdutosDTO cad = new ProdutosDTO();
+                cad.setId(resposta.getInt("id"));
+                cad.setNome(resposta.getString("nome"));
+                cad.setValor(resposta.getInt("valor"));
+                cad.setStatus(resposta.getString("status"));
+
+                f.add(cad);
+
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar");
+
+        }
+        return f;
+    }
+
+}
